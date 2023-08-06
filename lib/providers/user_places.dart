@@ -1,5 +1,3 @@
-
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nativecamera/model/place.dart';
 import 'dart:io';
@@ -25,20 +23,21 @@ Future<Database> _getDatabase() async {
 class UserPlacesNotifier extends StateNotifier<List<Place>> {
   UserPlacesNotifier() : super(const []);
 
-  void loadPlaces() async {
+  Future<void> loadPlaces() async {
     final db = await _getDatabase();
     final data = await db.query('user_places');
-    final places = data.map((row) {
-      Place(
-        id: row['id'] as String,
-        title: row['title'] as String,
-        image: File(row['image'] as String),
-        location: PlaceLocation(
-            address: row['address'] as String,
-            latitude: row['lat'] as double,
-            longitude: row['lng'] as double),
-      );
-    }).toList();
+    final places = data
+        .map(
+          (row) => Place(
+            id: row['id'] as String,
+            title: row['title'] as String,
+            image: File(row['image'] as String),
+            location: PlaceLocation(
+                address: row['address'] as String,
+                latitude: row['lat'] as double,
+                longitude: row['lng'] as double),
+          ),
+        ).toList();
 
     state = places;
   }
